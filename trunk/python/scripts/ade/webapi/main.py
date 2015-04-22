@@ -117,7 +117,8 @@ class ade_webapi():
     def getDate(self, week, day, slot):
         pass
 
-url = 'https://upplanning.appli.univ-poitiers.fr/ade/webapi?'
+#url = 'https://upplanning.appli.univ-poitiers.fr/ade/webapi?'
+url = 'https://upplanning6.appli.univ-poitiers.fr/jsp/webapi?'
 login = 'x'
 password = 'y'
 
