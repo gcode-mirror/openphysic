@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import unittest
 
@@ -278,6 +279,33 @@ class DigitSelectorTests(unittest.TestCase):
         self.assertEqual(p.get(), decimal.Decimal('0.02'))
         p.previous_value()
         self.assertEqual(p.get(), decimal.Decimal('0.01'))
+
+    def test_strings_list_01(self):
+        d = DigitPossible(['aaa', 'bbb', 'ccc'])
+        self.assertEqual(d.get(), 'aaa')
+        d.next()
+        self.assertEqual(d.get(), 'bbb')
+        d.next()
+        self.assertEqual(d.get(), 'ccc')
+        d.next()
+        self.assertEqual(d.get(), 'aaa')
+        d.previous()
+        self.assertEqual(d.get(), 'ccc')        
+
+    def test_strings_list_02(self):
+        d = DigitPossible(['aaa', 'bbb', 'ccc'], 'ccc')
+        self.assertEqual(d.get(), 'ccc')        
+        d.next()
+        self.assertEqual(d.get(), 'aaa')
+        d.next()
+        self.assertEqual(d.get(), 'bbb')
+        d.next()
+        self.assertEqual(d.get(), 'ccc')
+        d.next()
+        self.assertEqual(d.get(), 'aaa')
+        d.previous()
+        self.assertEqual(d.get(), 'ccc')        
+
 
 def main():
     unittest.main()
