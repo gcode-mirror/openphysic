@@ -4,7 +4,7 @@
 """
     ADE API Test
 
-    Copyright (C) 2011 "Sébastien Celles" <s.celles@gmail.com>
+    Copyright (C) 2011-2015 "Sébastien Celles" <s.celles@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -20,11 +20,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 """
 
+import requests
 import urllib
 import xml.dom.minidom
 import time
 
-class ade_webapi():
+class ADEWebAPI():
     def __init__(self, url, login, password):
         self.url = url
         self.login = login
@@ -40,45 +41,93 @@ class ade_webapi():
             time.sleep(1)
 
     def connect(self):
-        f = urllib.urlopen(self.url + "function={0}&login={1}&password={2}".format('connect', self.login, self.password))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
-        
-        dom = xml.dom.minidom.parseString(xmlrep)
-                
-        try:
-            elt = dom.getElementsByTagName('session')[0]
-            self.sessionId = elt.getAttribute('id')
-        except:
-            #elt = dom.getElementsByTagName('error')
-            raise Exception("Connect error")
+        params = {
+            'function': 'connect',
+            'login': self.login,
+            'password': self.password
+        }
+        response = requests.get(self.url, params=params)
+        print(response)
+        print(response.text)
 
+        #xmlrep = f.read()
+        #self.xml_debug(xmlrep)
+        
+        #dom = xml.dom.minidom.parseString(xmlrep)
+                
+        #try:
+        #    elt = dom.getElementsByTagName('session')[0]
+        #    self.sessionId = elt.getAttribute('id')
+        #except:
+        #    #elt = dom.getElementsByTagName('error')
+        #    raise Exception("Connect error")
 
     def disconnect(self):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}".format('disconnect', self.sessionId))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
+        params = {
+            'function': 'disconnect',
+            'sessionId': self.sessionId
+        }
+        response = requests.get(self.url, params=params)
+        print(response)
+        print(response.text)
+
+        #xmlrep = f.read()
+        #self.xml_debug(xmlrep)
         
     def getProjectsById(self, id):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&id={2}".format('getProjects', self.sessionId, id))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
+        params = {
+            'function': 'getProjects',
+            'sessionId': self.sessionId,
+            'id': id
+        }
+        response = requests.get(self.url, params=params)
+        print(response)
+        print(response.text)
+
+        #f = urllib.urlopen(self.url + "function={0}&sessionId={1}&id={2}".format('getProjects', self.sessionId, id))
+        #xmlrep = f.read()
+        #self.xml_debug(xmlrep)
 
     def getProjects(self, detail):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&detail={2}".format('getProjects', self.sessionId, detail))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
+        params = {
+            'function': 'getProjects',
+            'sessionId': self.sessionId,
+            'detail': detail
+        }
+        response = requests.get(self.url, params=params)
+        print(response)
+        print(response.text)
+
+        #f = urllib.urlopen(self.url + "function={0}&sessionId={1}&detail={2}".format('getProjects', self.sessionId, detail))
+        #xmlrep = f.read()
+        #self.xml_debug(xmlrep)
         
     def setProject(self, projectId):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&projectId={2}".format('setProject', self.sessionId, projectId))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
+        params = {
+            'function': 'setProject',
+            'sessionId': self.sessionId,
+            'projectId': projectId
+        }
+        response = requests.get(self.url, params=params)
+        print(response)
+        print(response.text)
             
-    def getResources(self): # ToFix
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=true&name=Amphi&category=classroom".format('getResources', self.sessionId))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
+    def getResources(self, category): # ToFix
+        params = {
+            'function': 'getResources',
+            'sessionId': self.sessionId,
+            'projectId': projectId,
+            'category': category # classroom, trainee, instructor
+        }
+        response = requests.get(self.url, params=params)
+        print(response)
+        print(response.text)
 
+        #f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=true&name=Amphi&category=classroom".format('getResources', self.sessionId))
+        #xmlrep = f.read()
+        #self.xml_debug(xmlrep)
+
+"""
     def getTraineeByCode(self, code): # ToFix
         f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=false&code={2}&category=trainee&leaves=true".format('getResources', self.sessionId, code))
         xmlrep = f.read()
@@ -116,21 +165,6 @@ class ade_webapi():
         
     def getDate(self, week, day, slot):
         pass
+"""
 
-#url = 'https://upplanning.appli.univ-poitiers.fr/ade/webapi?'
-url = 'https://upplanning6.appli.univ-poitiers.fr/jsp/webapi?'
-login = 'x'
-password = 'y'
-
-myade = ade_webapi(url, login, password)
-myade.connect()
-myade.getProjects(4) # 4 = + grand niveau de détail
-myade.setProject(11) # 2010-2011=>11 2011-2012=>1
-myade.getTraineeByCode('Z1PT11')
-#myade.getResources()
-#myade.getInstructorByName('CELLES SEBASTIEN')
-#myade.getInstructorByCode('4496')
-#myade.getClassrom('Amphi')
-#myade.getActivities()
-myade.disconnect()
 
