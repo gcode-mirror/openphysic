@@ -31,6 +31,9 @@ def hide_string(s, char_replace='*'):
     return(char_replace*len(s))
 
 class BaseObject(object):
+    """Base object class which can be easily initialize using
+    keyword parameters
+    Attributes can be access like a dict obj['myattribute']"""
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
             self.__dict__[key] = value
@@ -45,6 +48,7 @@ class Project(BaseObject):
     pass
 
 class Resource(BaseObject):
+    """Base object for resource (Trainee, Room, Instructor...)"""
     pass
 
 class Trainee(Resource):
@@ -253,6 +257,7 @@ class ADEWebAPI():
         
     def getDate(self, week, day, slot):
         function = 'getDate'
+        #self._test_opt_params(kwargs, function) # no keyword arguments (kwargs)
         element = self._send_request(function, week=week, day=day, slot=slot)
         date = Date(**element.attrib)
         return(date)
