@@ -32,6 +32,18 @@ import time
 def hide_string(s, char_replace='*'):
     return(char_replace*len(s))
 
+class Resource(object):
+    pass
+
+class Room(Resource):
+    pass
+
+class Trainee(Resource):
+    pass
+
+class Instructor(Resource):
+    pass
+
 class ADEWebAPI():
     def __init__(self, url, login, password):
         self.url = url
@@ -43,8 +55,8 @@ class ADEWebAPI():
         self.logger = logging.getLogger('ADEWebAPI')
 
     def hide_dict_values(self, d, hidden_keys=['password']):
-        """Hide values (such as password) of a dict before displaying
-        this dictionnary"""
+        """Returns a dictionnary with some hidden values (such as password)
+        when a dict is given"""
         d_hidden = d.copy()
         for key in hidden_keys:
             if key in d_hidden.keys():
@@ -52,6 +64,7 @@ class ADEWebAPI():
         return(d_hidden)
 
     def _send_request(self, func, **params):
+        """Send a request"""
         params['function'] = func
 
         if 'sessionId' not in params.keys():
@@ -67,30 +80,51 @@ class ADEWebAPI():
         return(element)
 
     def connect(self):
+        """Connect to server"""
         element = self._send_request('connect', login=self.login, password=self.password)
         returned_sessionId = element.attrib["id"]
         self.sessionId = returned_sessionId
         return(returned_sessionId is not None)
 
     def disconnect(self):
+        """Disconnect from server"""
         element = self._send_request('disconnect')
         returned_sessionId = element.attrib["sessionId"]
         return(returned_sessionId == self.sessionId)
 
+    def _list_with_attrib(self, lst):
+        return(map(lambda elt: elt.attrib, lst))
+
     def getProjects(self, detail=None, id=None):
+        """Returns (list of) projects"""
         element = self._send_request('getProjects', detail=detail, id=id)
         lst_projects = element.findall('project')
-        lst_projects = map(lambda project: project.attrib, lst_projects)
+        lst_projects = self._list_with_attrib(lst_projects)
         return(lst_projects)
                 
     def setProject(self, projectId):
+        """Set current project"""
         element = self._send_request('setProject', projectId=projectId)
         returned_projectId = element.attrib["projectId"]        
         returned_sessionId = element.attrib["sessionId"] 
         return(returned_sessionId == self.sessionId \
             and returned_projectId==str(projectId))
 
-            
+    def getResources(self, **kwargs):
+        opt_params = ['tree', 'folders', 'leaves', 'id', 'name', 'category', \
+            'type', 'email', 'url', 'size', 'quantity', 'code', 'address1', \
+            'address2', 'zipCode', 'state', 'city', 'country', 'telephone', \
+            'fax', 'timezone', 'jobCategory', 'manager', 'codeX', 'codeY', \
+            'codeZ', 'info', 'detail']
+        element = self._send_request('getResources', **kwargs)
+        if 'category' in kwargs.keys():
+            lst_resources = element.findall(kwargs['category'])
+            lst_resources = self._list_with_attrib(lst_resources)
+            return(lst_resources)
+        else:
+            lst_resources = element.findall('resource')
+            lst_resources = self._list_with_attrib(lst_resources)
+            return(lst_resources)
 
 """
     def getResources(self, category): # ToFix
