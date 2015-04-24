@@ -55,6 +55,26 @@ class ADEWebAPI():
         
         self.logger = logging.getLogger('ADEWebAPI')
 
+        self.opt_params = {
+            'connect': set([]),
+            'disconnect': set([]),
+            'setProject': set([]),
+            'getProjects': set(['detail', 'id']),
+            'getResources': set(['tree', 'folders', 'leaves', 'id', 'name', 'category', \
+                'type', 'email', 'url', 'size', 'quantity', 'code', 'address1', \
+                'address2', 'zipCode', 'state', 'city', 'country', 'telephone', \
+                'fax', 'timezone', 'jobCategory', 'manager', 'codeX', 'codeY', \
+                'codeZ', 'info', 'detail']),
+            'getActivities': set(['tree', 'id', 'name', 'resources', 'type', 'url', \
+                'capacity', 'duration', 'repetition', 'code', 'timezone', 'codeX', \
+                'codeY', 'codeZ', 'maxSeats', 'seatseLeft', 'info']),
+            'getEvents': set(['eventId', 'activities', 'name', 'resources', \
+                'weeks', 'days', 'date', 'detail']),
+            'getCosts': set(['id', 'name']),
+            'getCaractéristics': set(['id', 'name']),
+            'getDate': set([])
+        }
+
     def hide_dict_values(self, d, hidden_keys=['password']):
         """Returns a dictionnary with some hidden values (such as password)
         when a dict is given"""
@@ -82,19 +102,23 @@ class ADEWebAPI():
 
     def connect(self):
         """Connect to server"""
-        element = self._send_request('connect', login=self.login, password=self.password)
+        function = 'connect'
+        element = self._send_request(function, login=self.login, password=self.password)
         returned_sessionId = element.attrib["id"]
         self.sessionId = returned_sessionId
         return(returned_sessionId is not None)
 
     def disconnect(self):
         """Disconnect from server"""
-        element = self._send_request('disconnect')
+        function = 'disconnect'
+        element = self._send_request(function)
         returned_sessionId = element.attrib["sessionId"]
         return(returned_sessionId == self.sessionId)
 
-    def _test_params(self, given_params, opt_params):
-        """Test if kwargs parameters are in allowed optional parameters"""
+    def _test_opt_params(self, given_params, function):
+        """Test if kwargs parameters are in allowed optional parameters
+        of a given method"""
+        opt_params = self.opt_params[function]
         given_params = set(given_params.keys())
         msg = "One (or many) parameters of '%s' call are not allowed. %s is not in %s" \
             % ('getResources', given_params-opt_params, opt_params)
@@ -104,29 +128,29 @@ class ADEWebAPI():
         """Returns a list of dict (attributes of XML element)"""
         return(map(lambda elt: elt.attrib, lst))
 
-    def getProjects(self, detail=None, id=None):
+    #def getProjects(self, detail=None, id=None):
+    def getProjects(self, **kwargs):
         """Returns (list of) projects"""
-        element = self._send_request('getProjects', detail=detail, id=id)
+        function = 'getProjects'
+        #element = self._send_request(function, detail=detail, id=id)
+        element = self._send_request(function, **kwargs)
         lst_projects = element.findall('project')
         lst_projects = self._list_with_attrib(lst_projects)
         return(lst_projects)
                 
     def setProject(self, projectId):
         """Set current project"""
-        element = self._send_request('setProject', projectId=projectId)
+        function = 'setProject'
+        element = self._send_request(function, projectId=projectId)
         returned_projectId = element.attrib["projectId"]        
         returned_sessionId = element.attrib["sessionId"] 
         return(returned_sessionId == self.sessionId \
             and returned_projectId==str(projectId))
 
     def getResources(self, **kwargs):
-        opt_params = set(['tree', 'folders', 'leaves', 'id', 'name', 'category', \
-            'type', 'email', 'url', 'size', 'quantity', 'code', 'address1', \
-            'address2', 'zipCode', 'state', 'city', 'country', 'telephone', \
-            'fax', 'timezone', 'jobCategory', 'manager', 'codeX', 'codeY', \
-            'codeZ', 'info', 'detail'])
-        self._test_params(kwargs, opt_params)
-        element = self._send_request('getResources', **kwargs)
+        function = 'getResources'
+        self._test_opt_params(kwargs, function)
+        element = self._send_request(function, **kwargs)
         if 'category' in kwargs.keys():
             category = kwargs['category']
         else:
@@ -136,19 +160,24 @@ class ADEWebAPI():
         return(lst_resources)
 
     def getActivities(self, **kwargs):
-        opt_params = set(['tree', 'id', 'name', 'resources', 'type', 'url', \
-            'capacity', 'duration', 'repetition', 'code', 'timezone', 'codeX', \
-            'codeY', 'codeZ', 'maxSeats', 'seatseLeft', 'info'])
-        self._test_params(kwargs, opt_params)
+        function = 'getResources'
+        self._test_opt_params(kwargs, function)
         
-    def getEvents(self):
-        pass
+    def getEvents(self, **kwargs):
+        function = 'getEvents'
+        self._test_opt_params(kwargs, function)
+        raise(NotImplementedError)
         
-    def getCosts(self):
-        pass
+    def getCosts(self, **kwargs):
+        function = 'getCosts'
+        self._test_opt_params(kwargs, function)
+        raise(NotImplementedError)
 
-    def getCaracteristics(self):
-        pass
+    def getCaracteristics(self, **kwargs):
+        function = 'getCaracteristics'
+        self._test_opt_params(kwargs, function)
+        raise(NotImplementedError)
         
     def getDate(self, week, day, slot):
-        pass
+        function = 'getDate'
+        raise(NotImplementedError)
