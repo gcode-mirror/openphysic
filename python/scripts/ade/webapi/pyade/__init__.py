@@ -35,22 +35,14 @@ class BaseObject(object):
         for key, value in kwargs.items():
             self.__dict__[key] = value
 
+    def __getitem__(self, key):
+        return(self.__dict__[key])
+
     def __repr__(self):
         return("%s(%s)" % (self.__class__.__name__, repr(self.__dict__)))
 
 class Project(BaseObject):
     pass
-
-class ObjectFactory(object):
-    def create_object(self, typ, **kwargs):
-        resource_objects = {
-            'resource': Resource,
-            'trainee': Trainee,
-            'room': Room,
-            'instructor': Instructor,
-            'project': Project
-        }
-        return(resource_objects[typ](**kwargs))
 
 class Resource(BaseObject):
     pass
@@ -63,6 +55,37 @@ class Room(Resource):
 
 class Instructor(Resource):
     pass
+
+class Activity(BaseObject):
+    pass
+
+class Event(BaseObject):
+    pass
+
+class Cost(BaseObject):
+    pass
+
+class Caracteristic(BaseObject):
+    pass
+
+class Date(BaseObject):
+    pass
+
+class ObjectFactory(object):
+    def create_object(self, typ, **kwargs):
+        resource_objects = {
+            'resource': Resource,
+            'trainee': Trainee,
+            'room': Room,
+            'instructor': Instructor,
+            'project': Project,
+            'activity': Activity,
+            'event': Event,
+            'cost': Cost,
+            'caracteristic': Caracteristic,
+            'date': Date,
+        }
+        return(resource_objects[typ](**kwargs))
 
 class ADEWebAPI():
     def __init__(self, url, login, password):
@@ -193,36 +216,43 @@ class ADEWebAPI():
         return(lst_resources)
 
     def getActivities(self, **kwargs):
-        function = 'getResources'
+        function = 'getActivities'
         self._test_opt_params(kwargs, function)
+        typ = 'activity'
         element = self._send_request(function, **kwargs)
-        print(element)
-        #lst_elements = self._create_list_of_dicts(category, lst_elements)
-        
+        lst_activities = element.findall(typ)
+        lst_activities = self._create_list_of(typ, lst_activities)
+        return(lst_activities)
         
     def getEvents(self, **kwargs):
         function = 'getEvents'
         self._test_opt_params(kwargs, function)
+        typ = 'event'
         element = self._send_request(function, **kwargs)
-        print(element)
-        raise(NotImplementedError)
+        lst_events = element.findall(typ)
+        lst_events = self._create_list_of(typ, lst_events)
+        return(lst_events)
         
     def getCosts(self, **kwargs):
         function = 'getCosts'
         self._test_opt_params(kwargs, function)
         element = self._send_request(function, **kwargs)
-        print(element)
-        raise(NotImplementedError)
+        typ = 'cost'
+        lst = element.findall(typ)
+        lst = self._create_list_of(typ, lst)
+        return(lst)
 
     def getCaracteristics(self, **kwargs):
         function = 'getCaracteristics'
         self._test_opt_params(kwargs, function)
         element = self._send_request(function, **kwargs)
-        print(element)
-        raise(NotImplementedError)
+        typ = 'caracteristic'
+        lst = element.findall(typ)
+        lst = self._create_list_of(typ, lst)
+        return(lst)
         
     def getDate(self, week, day, slot):
         function = 'getDate'
         element = self._send_request(function, week=week, day=day, slot=slot)
-        print(element)
-        raise(NotImplementedError)
+        date = Date(**element.attrib)
+        return(date)

@@ -63,34 +63,60 @@ def main(url, login, password):
     print("%s %s %s" % (url, login, hide_string(password)))
 
     myade = ADEWebAPI(url, login, password)
-    #myade.create_list_of_objects(True)
+    myade.create_list_of_objects(True) # True: create_list_of_objects False: create_list_of_dicts
     connected = myade.connect()
     print("connected: %s" % connected)
 
     try:
 
         projects = myade.getProjects(detail=5) # detail=..., id=...
-        print("projects:\n%s" % pd.DataFrame(projects))
+        print("projects: %s" % projects)
+        #print("projects:\n%s" % pd.DataFrame(projects))
+        print("")
 
         project_set = myade.setProject(5) # 2014-2015=>5
         print("project_set: %s" % project_set)
+        print("")
 
         #resources = myade.getResources(category='trainee')
         resources = myade.getResources(category='trainee', id=4496)
         print("resources: %s" % resources)
+        print("")
 
-        resources = myade.getResources(name='BC-138')
-        #resources = myade.getResources(name='BC-138', not_allowed_parameter='test')
+        #resources = myade.getResources(name='BC-138')
+        ##resources = myade.getResources(name='BC-138', tree=False)
+        ##resources = myade.getResources(name='BC-138', tree=True)
+        ##resources = myade.getResources(name='BC-138', not_allowed_parameter='test')
+        #print("resources: %s" % resources)
+        #print("")
+
+        resources = myade.getResources(category='room', name='BC-138', leaves=True)
+        ##resources = myade.getResources(category='room', name='BC-138|GT-B4')
         print("resources: %s" % resources)
+        print("")
 
-        resources = myade.getResources(category='room', name='BC-138')
-        #resources = myade.getResources(category='room', name='BC-138|GT-B4')
+        #resources = myade.getResources(category='instructor', name='CELLES SEBASTIEN')
+        resources = myade.getResources(category='instructor', code='9994')
         print("resources: %s" % resources)
+        print("")
 
-        resources = myade.getResources(category='instructor', name='CELLES SEBASTIEN')
-        print("resources: %s" % resources)
+        resource = resources[0]['id'] # id of the first resource
 
-        #myade.getActivities()
+        activities = myade.getActivities(resources=resource) # , tree=True
+        print("activities: %s" % activities)
+        print("")
+
+        activity = activities[0]['id'] # id of the first activity
+
+        events = myade.getEvents(activities=activity)
+        print("events: %s" % events)
+        print("")
+
+
+        dates = myade.getDate(week=1, day=1, slot=1)
+        print("dates: %s" % dates)
+        print("")
+
 
     except:
         print(traceback.format_exc())
