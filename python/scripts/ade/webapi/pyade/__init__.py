@@ -96,8 +96,13 @@ class ADEWebAPI():
             'getDate': set([])
         }
 
-        #self._create_list_of = self._create_list_of_dicts
-        self._create_list_of = self._create_list_of_objects
+        self.create_list_of_objects(False)
+    
+    def create_list_of_objects(self, flag):
+        if flag:
+            self._create_list_of = self._create_list_of_objects
+        else:
+            self._create_list_of = self._create_list_of_dicts
 
     def hide_dict_values(self, d, hidden_keys=['password']):
         """Returns a dictionnary with some hidden values (such as password)
@@ -190,22 +195,34 @@ class ADEWebAPI():
     def getActivities(self, **kwargs):
         function = 'getResources'
         self._test_opt_params(kwargs, function)
+        element = self._send_request(function, **kwargs)
+        print(element)
+        #lst_elements = self._create_list_of_dicts(category, lst_elements)
+        
         
     def getEvents(self, **kwargs):
         function = 'getEvents'
         self._test_opt_params(kwargs, function)
+        element = self._send_request(function, **kwargs)
+        print(element)
         raise(NotImplementedError)
         
     def getCosts(self, **kwargs):
         function = 'getCosts'
         self._test_opt_params(kwargs, function)
+        element = self._send_request(function, **kwargs)
+        print(element)
         raise(NotImplementedError)
 
     def getCaracteristics(self, **kwargs):
         function = 'getCaracteristics'
         self._test_opt_params(kwargs, function)
+        element = self._send_request(function, **kwargs)
+        print(element)
         raise(NotImplementedError)
         
     def getDate(self, week, day, slot):
         function = 'getDate'
+        element = self._send_request(function, week=week, day=day, slot=slot)
+        print(element)
         raise(NotImplementedError)
