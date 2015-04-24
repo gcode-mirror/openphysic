@@ -112,6 +112,20 @@ def main(url, login, password):
         print("events: %s" % events)
         print("")
 
+        """
+        costs = myade.getCosts(id=10)
+        print("costs: %s" % costs)
+        print("")
+        #<error type="3" name="com.adesoft.errors.NotFoundException: Cost not found. Id=10" trace="com.adesoft.errors.NotFoundException: Cost not found. Id=10&#10;&#9;at com.adesoft.serverimpl.AbstractApiXml.getCost(Unknown Source)&#10;&#9;at com.adesoft.serverimpl.ApiXmlImpl.getCostById(Unknown Source)&#10;&#9;at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)&#10;&#9;at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)&#10;&#9;at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)&#10;&#9;at java.lang.reflect.Method.invoke(Method.java:597)&#10;&#9;at sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:305)&#10;&#9;at sun.rmi.transport.Transport$1.run(Transport.java:159)&#10;&#9;at java.security.AccessController.doPrivileged(Native Method)&#10;&#9;at sun.rmi.transport.Transport.serviceCall(Transport.java:155)&#10;&#9;at sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:535)&#10;&#9;at sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:790)&#10;&#9;at sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:649)&#10;&#9;at java.util.concurrent.ThreadPoolExecutor$Worker.runTask(ThreadPoolExecutor.java:886)&#10;&#9;at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:908)&#10;&#9;at java.lang.Thread.run(Thread.java:619)&#10;&#9;at sun.rmi.transport.StreamRemoteCall.exceptionReceivedFromServer(StreamRemoteCall.java:255)&#10;&#9;at sun.rmi.transport.StreamRemoteCall.executeCall(StreamRemoteCall.java:233)&#10;&#9;at sun.rmi.server.UnicastRef.invoke(UnicastRef.java:142)&#10;&#9;at com.adesoft.serverimpl.ApiXmlImpl6_Stub.getCostById(Unknown Source)&#10;&#9;at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)&#10;&#9;at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)&#10;&#9;at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)&#10;&#9;at java.lang.reflect.Method.invoke(Method.java:597)&#10;&#9;at com.adesoft.proxies.RetryProxy.invoke(Unknown Source)&#10;&#9;at $Proxy0.getCostById(Unknown Source)&#10;&#9;at com.adesoft.beans.AdeApi6.getCostById(Unknown Source)&#10;&#9;at com.adesoft.webapi.WebApi.getCosts(Unknown Source)&#10;&#9;at com.adesoft.webapi.WebApi.service(Unknown Source)&#10;&#9;at javax.servlet.http.HttpServlet.service(HttpServlet.java:723)&#10;&#9;at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:290)&#10;&#9;at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:206)&#10;&#9;at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:233)&#10;&#9;at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:191)&#10;&#9;at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:127)&#10;&#9;at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:103)&#10;&#9;at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:109)&#10;&#9;at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:293)&#10;&#9;at org.apache.coyote.http11.Http11Processor.process(Http11Processor.java:861)&#10;&#9;at org.apache.coyote.http11.Http11Protocol$Http11ConnectionHandler.process(Http11Protocol.java:606)&#10;&#9;at org.apache.tomcat.util.net.JIoEndpoint$Worker.run(JIoEndpoint.java:489)&#10;&#9;at java.lang.Thread.run(Thread.java:619)&#10;"/>
+        ToDo: raise Exception on Python side
+        """
+
+        """
+        caracteristics = myade.getCaracteristics(id=1)
+        print("caracteristics: %s" % caracteristics)
+        print("")
+        ToFix: blank return data
+        """
 
         dates = myade.getDate(week=1, day=1, slot=1)
         print("dates: %s" % dates)

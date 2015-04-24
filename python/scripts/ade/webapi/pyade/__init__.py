@@ -115,7 +115,7 @@ class ADEWebAPI():
             'getEvents': set(['eventId', 'activities', 'name', 'resources', \
                 'weeks', 'days', 'date', 'detail']),
             'getCosts': set(['id', 'name']),
-            'getCaractéristics': set(['id', 'name']),
+            'getCaracteristics': set(['id', 'name']),
             'getDate': set([])
         }
 
