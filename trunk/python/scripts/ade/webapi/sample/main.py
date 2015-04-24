@@ -52,13 +52,21 @@ def get_info(key, default_value):
 def main(url, login, password):
     #logger = logging.getLogger('ADEWebAPI')
     logger = logging.getLogger()
-    logger.setLevel(logging.DEBUG)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.DEBUG)
+    # create formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    # add formatter to ch
+    ch.setFormatter(formatter)
+    # add ch to logger
+    logger.addHandler(ch)
 
     url = get_info('url', url)
     login = get_info('login', login)
     password = get_info('password', password)
 
-    logger.info("%s %s %s" % (url, login, hide_string(password)))
+    #logger.debug("%s %s %s" % (url, login, hide_string(password)))
+    print("%s %s %s" % (url, login, hide_string(password)))
 
     myade = ADEWebAPI(url, login, password)
     myade.connect()
