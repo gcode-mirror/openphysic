@@ -60,9 +60,14 @@ def main(url, login, password):
     print("%s %s %s" % (url, login, hide_string(password)))
 
     myade = ADEWebAPI(url, login, password)
-    myade.connect()
-    #myade.getProjects(4) # 4 = + grand niveau de détail
-    #myade.setProject(11) # 2010-2011=>11 2011-2012=>1
+    connected = myade.connect()
+    print("connected: %s" % connected)
+    projects = myade.getProjects(4) # 4 = + grand niveau de détail
+    print("projects: %s" % projects)
+
+    project_set = myade.setProject(5) # 2014-2015=>5
+    print("project_set: %s" % project_set)
+
     #myade.getTraineeByCode('Z1PT11')
     #myade.getResources()
     #myade.getInstructorByName('CELLES SEBASTIEN')
@@ -70,12 +75,15 @@ def main(url, login, password):
     #myade.getClassrom('Amphi')
     #myade.getActivities()
 
-    time.sleep(5)
+    delay = 5
+    print("Wait %d seconds" % delay)
+    time.sleep(delay)
 
-    myade.disconnect()
+    disconnected = myade.disconnect()
+    print("disconnected: %s" % disconnected)
 
 if __name__ == "__main__":
     basepath = os.path.dirname(__file__)
     logging.config.fileConfig(os.path.join(basepath, "logging.conf"))
-    logger = logging.getLogger("simpleExample")
+    #logger = logging.getLogger("simpleExample")
     main()

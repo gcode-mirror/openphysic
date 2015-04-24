@@ -40,24 +40,23 @@ class ADEWebAPI():
         
         self.sessionId = None
         
-        self.debug = True
-
         self.logger = logging.getLogger('ADEWebAPI')
 
-    def xml_debug(self, xmlrep):
-        if self.debug:
-            print(xmlrep)
-            time.sleep(1)
-
     def hide_dict_values(self, d, hidden_keys=['password']):
+        """Hide values (such as password) of a dict before displaying
+        this dictionnary"""
         d_hidden = d.copy()
         for key in hidden_keys:
             if key in d_hidden.keys():
                 d_hidden[key] = hide_string(d_hidden[key])
         return(d_hidden)
 
-    def _send_request(self, func, params):
+    def _send_request(self, func, **params):
         params['function'] = func
+
+        if 'sessionId' not in params.keys():
+            if self.sessionId is not None:
+                params['sessionId'] = self.sessionId
         
         self.logger.debug("send %s" % self.hide_dict_values(params))
         response = requests.get(self.url, params=params)
@@ -68,77 +67,32 @@ class ADEWebAPI():
         return(element)
 
     def connect(self):
-        func = 'connect'
-
-        params = {
-            'login': self.login,
-            'password': self.password
-        }
-
-        try:
-            session = self._send_request(func, params)
-            session_id = session.attrib["id"]
-            self.sessionId = session_id
-        except:
-            raise(Exception(traceback.format_exc()))
+        element = self._send_request('connect', login=self.login, password=self.password)
+        returned_sessionId = element.attrib["id"]
+        self.sessionId = returned_sessionId
+        return(returned_sessionId is not None)
 
     def disconnect(self):
-        func = 'disconnect'
+        element = self._send_request('disconnect')
+        returned_sessionId = element.attrib["sessionId"]
+        return(returned_sessionId == self.sessionId)
 
-        params = {
-            'sessionId': self.sessionId
-        }
-
-        try:
-            disconnected = self._send_request(func, params)
-            session_id = disconnected.attrib["sessionId"]
-            assert(session_id == self.sessionId)
-        except:
-            raise(Exception(traceback.format_exc()))
-
-        response = requests.get(self.url, params=params)
-
-        #xmlrep = f.read()
-        #self.xml_debug(xmlrep)
-        
-    def getProjectsById(self, id):
-        params = {
-            'function': 'getProjects',
-            'sessionId': self.sessionId,
-            'id': id
-        }
-        response = requests.get(self.url, params=params)
-        print(response)
-        print(response.text)
-
-        #f = urllib.urlopen(self.url + "function={0}&sessionId={1}&id={2}".format('getProjects', self.sessionId, id))
-        #xmlrep = f.read()
-        #self.xml_debug(xmlrep)
-
-    def getProjects(self, detail):
-        params = {
-            'function': 'getProjects',
-            'sessionId': self.sessionId,
-            'detail': detail
-        }
-        response = requests.get(self.url, params=params)
-        print(response)
-        print(response.text)
-
-        #f = urllib.urlopen(self.url + "function={0}&sessionId={1}&detail={2}".format('getProjects', self.sessionId, detail))
-        #xmlrep = f.read()
-        #self.xml_debug(xmlrep)
-        
+    def getProjects(self, detail=None, id=None):
+        element = self._send_request('getProjects', detail=detail, id=id)
+        lst_projects = element.findall('project')
+        lst_projects = map(lambda project: project.attrib, lst_projects)
+        return(lst_projects)
+                
     def setProject(self, projectId):
-        params = {
-            'function': 'setProject',
-            'sessionId': self.sessionId,
-            'projectId': projectId
-        }
-        response = requests.get(self.url, params=params)
-        print(response)
-        print(response.text)
+        element = self._send_request('setProject', projectId=projectId)
+        returned_projectId = element.attrib["projectId"]        
+        returned_sessionId = element.attrib["sessionId"] 
+        return(returned_sessionId == self.sessionId \
+            and returned_projectId==str(projectId))
+
             
+
+"""
     def getResources(self, category): # ToFix
         params = {
             'function': 'getResources',
@@ -154,7 +108,6 @@ class ADEWebAPI():
         #xmlrep = f.read()
         #self.xml_debug(xmlrep)
 
-"""
     def getTraineeByCode(self, code): # ToFix
         f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=false&code={2}&category=trainee&leaves=true".format('getResources', self.sessionId, code))
         xmlrep = f.read()
