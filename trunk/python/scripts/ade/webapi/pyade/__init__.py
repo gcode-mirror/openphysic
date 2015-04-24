@@ -30,16 +30,35 @@ import time
 def hide_string(s, char_replace='*'):
     return(char_replace*len(s))
 
-class Project(object):
+class BaseObject(object):
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            self.__dict__[key] = value
+
+    def __repr__(self):
+        return("%s(%s)" % (self.__class__.__name__, repr(self.__dict__)))
+
+class Project(BaseObject):
     pass
 
-class Resource(object):
-    pass
+class ObjectFactory(object):
+    def create_object(self, typ, **kwargs):
+        resource_objects = {
+            'resource': Resource,
+            'trainee': Trainee,
+            'room': Room,
+            'instructor': Instructor,
+            'project': Project
+        }
+        return(resource_objects[typ](**kwargs))
 
-class Room(Resource):
+class Resource(BaseObject):
     pass
 
 class Trainee(Resource):
+    pass
+
+class Room(Resource):
     pass
 
 class Instructor(Resource):
@@ -54,6 +73,8 @@ class ADEWebAPI():
         self.sessionId = None
         
         self.logger = logging.getLogger('ADEWebAPI')
+
+        self.factory = ObjectFactory()
 
         self.opt_params = {
             'connect': set([]),
@@ -74,6 +95,9 @@ class ADEWebAPI():
             'getCaractéristics': set(['id', 'name']),
             'getDate': set([])
         }
+
+        #self._create_list_of = self._create_list_of_dicts
+        self._create_list_of = self._create_list_of_objects
 
     def hide_dict_values(self, d, hidden_keys=['password']):
         """Returns a dictionnary with some hidden values (such as password)
@@ -124,9 +148,13 @@ class ADEWebAPI():
             % ('getResources', given_params-opt_params, opt_params)
         assert given_params <= opt_params, msg
 
-    def _list_with_attrib(self, lst):
+    def _create_list_of_dicts(self, category, lst):
         """Returns a list of dict (attributes of XML element)"""
         return(map(lambda elt: elt.attrib, lst))
+
+    def _create_list_of_objects(self, category, lst):
+        """Returns a list of object using factory"""
+        return(map(lambda elt: self.factory.create_object(category, **elt.attrib), lst))
 
     #def getProjects(self, detail=None, id=None):
     def getProjects(self, **kwargs):
@@ -135,7 +163,7 @@ class ADEWebAPI():
         #element = self._send_request(function, detail=detail, id=id)
         element = self._send_request(function, **kwargs)
         lst_projects = element.findall('project')
-        lst_projects = self._list_with_attrib(lst_projects)
+        lst_projects = self._create_list_of('project', lst_projects)
         return(lst_projects)
                 
     def setProject(self, projectId):
@@ -156,7 +184,7 @@ class ADEWebAPI():
         else:
             category = 'resource'
         lst_resources = element.findall(category)
-        lst_resources = self._list_with_attrib(lst_resources)
+        lst_resources = self._create_list_of(category, lst_resources)
         return(lst_resources)
 
     def getActivities(self, **kwargs):
