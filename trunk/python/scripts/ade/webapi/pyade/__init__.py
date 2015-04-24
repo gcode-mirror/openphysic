@@ -29,6 +29,8 @@ import urllib
 from xml.etree import ElementTree as ET
 import time
 
+def hide_string(s, char_replace='*'):
+    return(char_replace*len(s))
 
 class ADEWebAPI():
     def __init__(self, url, login, password):
@@ -47,14 +49,17 @@ class ADEWebAPI():
             print(xmlrep)
             time.sleep(1)
 
-    def hide_d(d):
+    def hide_dict_values(self, d, hidden_keys=['password']):
         d_hidden = d.copy()
+        for key in hidden_keys:
+            if key in d_hidden.keys():
+                d_hidden[key] = hide_string(d_hidden[key])
         return(d_hidden)
 
     def _send_request(self, func, params):
         params['function'] = func
         
-        self.logger.debug("send %s" % params)
+        self.logger.debug("send %s" % self.hide_dict_values(params))
         response = requests.get(self.url, params=params)
         self.logger.debug(response)
         self.logger.debug(response.text)

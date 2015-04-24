@@ -21,18 +21,17 @@
 """
 
 import logging
+import logging.config
 import click
 import os
 
 import time
 
-from pyade import ADEWebAPI
+from pyade import ADEWebAPI, hide_string
 
 
 ENV_VAR_ROOT = 'ADE_WEB_API'
 
-def hide_string(s):
-    return("*"*len(s))
 
 def get_info(key, default_value):
     ENV_VAR_KEY = ENV_VAR_ROOT + "_" + key.upper()
@@ -50,16 +49,8 @@ def get_info(key, default_value):
 @click.option("--login", default="", help="User login")
 @click.option("--password", default="", help="User password")
 def main(url, login, password):
-    #logger = logging.getLogger('ADEWebAPI')
-    logger = logging.getLogger()
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.DEBUG)
-    # create formatter
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    # add formatter to ch
-    ch.setFormatter(formatter)
-    # add ch to logger
-    logger.addHandler(ch)
+    logger = logging.getLogger('ADEWebAPI')
+    #logger = logging.getLogger()
 
     url = get_info('url', url)
     login = get_info('login', login)
@@ -84,4 +75,7 @@ def main(url, login, password):
     myade.disconnect()
 
 if __name__ == "__main__":
+    basepath = os.path.dirname(__file__)
+    logging.config.fileConfig(os.path.join(basepath, "logging.conf"))
+    logger = logging.getLogger("simpleExample")
     main()
