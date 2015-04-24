@@ -63,6 +63,7 @@ def main(url, login, password):
     print("%s %s %s" % (url, login, hide_string(password)))
 
     myade = ADEWebAPI(url, login, password)
+    #myade.create_list_of_objects(True)
     connected = myade.connect()
     print("connected: %s" % connected)
 
@@ -83,15 +84,12 @@ def main(url, login, password):
         print("resources: %s" % resources)
 
         resources = myade.getResources(category='room', name='BC-138')
+        #resources = myade.getResources(category='room', name='BC-138|GT-B4')
         print("resources: %s" % resources)
 
         resources = myade.getResources(category='instructor', name='CELLES SEBASTIEN')
         print("resources: %s" % resources)
 
-        #myade.getTraineeByCode('Z1PT11')
-        #myade.getInstructorByName('CELLES SEBASTIEN')
-        #myade.getInstructorByCode('4496')
-        #myade.getClassrom('Amphi')
         #myade.getActivities()
 
     except:
