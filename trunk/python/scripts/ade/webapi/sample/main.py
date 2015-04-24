@@ -20,6 +20,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 """
 
+import pandas as pd
+
 import logging
 import logging.config
 import click
@@ -62,14 +64,26 @@ def main(url, login, password):
     myade = ADEWebAPI(url, login, password)
     connected = myade.connect()
     print("connected: %s" % connected)
-    projects = myade.getProjects(4) # 4 = + grand niveau de détail
-    print("projects: %s" % projects)
+    projects = myade.getProjects(5) # niveau de détail
+    print("projects:\n%s" % pd.DataFrame(projects))
 
     project_set = myade.setProject(5) # 2014-2015=>5
     print("project_set: %s" % project_set)
 
+    #resources = myade.getResources(category='trainee')
+    resources = myade.getResources(category='trainee', id=4496)
+    print("resources: %s" % resources)
+
+    resources = myade.getResources(name='BC-138')
+    print("resources: %s" % resources)
+
+    resources = myade.getResources(category='room', name='BC-138')
+    print("resources: %s" % resources)
+
+    resources = myade.getResources(category='instructor', name='CELLES SEBASTIEN')
+    print("resources: %s" % resources)
+
     #myade.getTraineeByCode('Z1PT11')
-    #myade.getResources()
     #myade.getInstructorByName('CELLES SEBASTIEN')
     #myade.getInstructorByCode('4496')
     #myade.getClassrom('Amphi')
