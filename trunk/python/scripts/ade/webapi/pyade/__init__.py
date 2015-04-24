@@ -20,10 +20,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>
 """
 
+import logging
+import traceback
+
 import requests
 import urllib
-import xml.dom.minidom
+#import xml.dom.minidom
+from xml.etree import ElementTree as ET
 import time
+
 
 class ADEWebAPI():
     def __init__(self, url, login, password):
@@ -35,41 +40,58 @@ class ADEWebAPI():
         
         self.debug = True
 
+        self.logger = logging.getLogger('ADEWebAPI')
+
     def xml_debug(self, xmlrep):
         if self.debug:
             print(xmlrep)
             time.sleep(1)
 
+    def hide_d(d):
+        d_hidden = d.copy()
+        return(d_hidden)
+
+    def _send_request(self, func, params):
+        params['function'] = func
+        
+        self.logger.debug("send %s" % params)
+        response = requests.get(self.url, params=params)
+        self.logger.debug(response)
+        self.logger.debug(response.text)
+        element = ET.fromstring(response.text)
+
+        return(element)
+
     def connect(self):
+        func = 'connect'
+
         params = {
-            'function': 'connect',
             'login': self.login,
             'password': self.password
         }
-        response = requests.get(self.url, params=params)
-        print(response)
-        print(response.text)
 
-        #xmlrep = f.read()
-        #self.xml_debug(xmlrep)
-        
-        #dom = xml.dom.minidom.parseString(xmlrep)
-                
-        #try:
-        #    elt = dom.getElementsByTagName('session')[0]
-        #    self.sessionId = elt.getAttribute('id')
-        #except:
-        #    #elt = dom.getElementsByTagName('error')
-        #    raise Exception("Connect error")
+        try:
+            session = self._send_request(func, params)
+            session_id = session.attrib["id"]
+            self.sessionId = session_id
+        except:
+            raise(Exception(traceback.format_exc()))
 
     def disconnect(self):
+        func = 'disconnect'
+
         params = {
-            'function': 'disconnect',
             'sessionId': self.sessionId
         }
+
+        try:
+            disconnected = self._send_request(func, params)
+            session_id = disconnected.attrib["sessionId"]
+            assert(session_id == self.sessionId)
+        except:
+            raise(Exception(traceback.format_exc()))
+
         response = requests.get(self.url, params=params)
-        print(response)
-        print(response.text)
 
         #xmlrep = f.read()
         #self.xml_debug(xmlrep)

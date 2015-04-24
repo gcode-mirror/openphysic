@@ -24,9 +24,15 @@ import logging
 import click
 import os
 
+import time
+
 from pyade import ADEWebAPI
 
+
 ENV_VAR_ROOT = 'ADE_WEB_API'
+
+def hide_string(s):
+    return("*"*len(s))
 
 def get_info(key, default_value):
     ENV_VAR_KEY = ENV_VAR_ROOT + "_" + key.upper()
@@ -44,11 +50,15 @@ def get_info(key, default_value):
 @click.option("--login", default="", help="User login")
 @click.option("--password", default="", help="User password")
 def main(url, login, password):
+    #logger = logging.getLogger('ADEWebAPI')
+    logger = logging.getLogger()
+    logger.setLevel(logging.DEBUG)
+
     url = get_info('url', url)
     login = get_info('login', login)
     password = get_info('password', password)
 
-    print(url, login, password)
+    logger.info("%s %s %s" % (url, login, hide_string(password)))
 
     myade = ADEWebAPI(url, login, password)
     myade.connect()
@@ -60,6 +70,9 @@ def main(url, login, password):
     #myade.getInstructorByCode('4496')
     #myade.getClassrom('Amphi')
     #myade.getActivities()
+
+    time.sleep(5)
+
     myade.disconnect()
 
 if __name__ == "__main__":
