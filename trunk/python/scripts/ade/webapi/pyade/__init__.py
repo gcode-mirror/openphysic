@@ -24,13 +24,14 @@ import logging
 import traceback
 
 import requests
-import urllib
-#import xml.dom.minidom
 from xml.etree import ElementTree as ET
 import time
 
 def hide_string(s, char_replace='*'):
     return(char_replace*len(s))
+
+class Project(object):
+    pass
 
 class Resource(object):
     pass
@@ -92,7 +93,15 @@ class ADEWebAPI():
         returned_sessionId = element.attrib["sessionId"]
         return(returned_sessionId == self.sessionId)
 
+    def _test_params(self, given_params, opt_params):
+        """Test if kwargs parameters are in allowed optional parameters"""
+        given_params = set(given_params.keys())
+        msg = "One (or many) parameters of '%s' call are not allowed. %s is not in %s" \
+            % ('getResources', given_params-opt_params, opt_params)
+        assert given_params <= opt_params, msg
+
     def _list_with_attrib(self, lst):
+        """Returns a list of dict (attributes of XML element)"""
         return(map(lambda elt: elt.attrib, lst))
 
     def getProjects(self, detail=None, id=None):
@@ -111,62 +120,26 @@ class ADEWebAPI():
             and returned_projectId==str(projectId))
 
     def getResources(self, **kwargs):
-        opt_params = ['tree', 'folders', 'leaves', 'id', 'name', 'category', \
+        opt_params = set(['tree', 'folders', 'leaves', 'id', 'name', 'category', \
             'type', 'email', 'url', 'size', 'quantity', 'code', 'address1', \
             'address2', 'zipCode', 'state', 'city', 'country', 'telephone', \
             'fax', 'timezone', 'jobCategory', 'manager', 'codeX', 'codeY', \
-            'codeZ', 'info', 'detail']
+            'codeZ', 'info', 'detail'])
+        self._test_params(kwargs, opt_params)
         element = self._send_request('getResources', **kwargs)
         if 'category' in kwargs.keys():
-            lst_resources = element.findall(kwargs['category'])
-            lst_resources = self._list_with_attrib(lst_resources)
-            return(lst_resources)
+            category = kwargs['category']
         else:
-            lst_resources = element.findall('resource')
-            lst_resources = self._list_with_attrib(lst_resources)
-            return(lst_resources)
+            category = 'resource'
+        lst_resources = element.findall(category)
+        lst_resources = self._list_with_attrib(lst_resources)
+        return(lst_resources)
 
-"""
-    def getResources(self, category): # ToFix
-        params = {
-            'function': 'getResources',
-            'sessionId': self.sessionId,
-            'projectId': projectId,
-            'category': category # classroom, trainee, instructor
-        }
-        response = requests.get(self.url, params=params)
-        print(response)
-        print(response.text)
-
-        #f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=true&name=Amphi&category=classroom".format('getResources', self.sessionId))
-        #xmlrep = f.read()
-        #self.xml_debug(xmlrep)
-
-    def getTraineeByCode(self, code): # ToFix
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=false&code={2}&category=trainee&leaves=true".format('getResources', self.sessionId, code))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
-
-
-    def getClassrom(self, name):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=true&name={2}&category=classroom".format('getResources', self.sessionId, name))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
-
-    def getInstructorByName(self, name):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=true&name={2}&category=instructor".format('getResources', self.sessionId, name))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
-
-    def getInstructorByCode(self, code):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=true&code={2}&category=instructor".format('getResources', self.sessionId, code))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
-
-    def getActivities(self):
-        f = urllib.urlopen(self.url + "function={0}&sessionId={1}&tree=true".format('getActivities', self.sessionId))
-        xmlrep = f.read()
-        self.xml_debug(xmlrep)
+    def getActivities(self, **kwargs):
+        opt_params = set(['tree', 'id', 'name', 'resources', 'type', 'url', \
+            'capacity', 'duration', 'repetition', 'code', 'timezone', 'codeX', \
+            'codeY', 'codeZ', 'maxSeats', 'seatseLeft', 'info'])
+        self._test_params(kwargs, opt_params)
         
     def getEvents(self):
         pass
@@ -179,6 +152,3 @@ class ADEWebAPI():
         
     def getDate(self, week, day, slot):
         pass
-"""
-
-

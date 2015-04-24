@@ -24,6 +24,7 @@ import pandas as pd
 
 import logging
 import logging.config
+import traceback
 import click
 import os
 
@@ -64,30 +65,37 @@ def main(url, login, password):
     myade = ADEWebAPI(url, login, password)
     connected = myade.connect()
     print("connected: %s" % connected)
-    projects = myade.getProjects(5) # niveau de détail
-    print("projects:\n%s" % pd.DataFrame(projects))
 
-    project_set = myade.setProject(5) # 2014-2015=>5
-    print("project_set: %s" % project_set)
+    try:
 
-    #resources = myade.getResources(category='trainee')
-    resources = myade.getResources(category='trainee', id=4496)
-    print("resources: %s" % resources)
+        projects = myade.getProjects(5) # niveau de détail
+        print("projects:\n%s" % pd.DataFrame(projects))
 
-    resources = myade.getResources(name='BC-138')
-    print("resources: %s" % resources)
+        project_set = myade.setProject(5) # 2014-2015=>5
+        print("project_set: %s" % project_set)
 
-    resources = myade.getResources(category='room', name='BC-138')
-    print("resources: %s" % resources)
+        #resources = myade.getResources(category='trainee')
+        resources = myade.getResources(category='trainee', id=4496)
+        print("resources: %s" % resources)
 
-    resources = myade.getResources(category='instructor', name='CELLES SEBASTIEN')
-    print("resources: %s" % resources)
+        #resources = myade.getResources(name='BC-138')
+        resources = myade.getResources(name='BC-138', not_allowed_parameter='test')
+        print("resources: %s" % resources)
 
-    #myade.getTraineeByCode('Z1PT11')
-    #myade.getInstructorByName('CELLES SEBASTIEN')
-    #myade.getInstructorByCode('4496')
-    #myade.getClassrom('Amphi')
-    #myade.getActivities()
+        resources = myade.getResources(category='room', name='BC-138')
+        print("resources: %s" % resources)
+
+        resources = myade.getResources(category='instructor', name='CELLES SEBASTIEN')
+        print("resources: %s" % resources)
+
+        #myade.getTraineeByCode('Z1PT11')
+        #myade.getInstructorByName('CELLES SEBASTIEN')
+        #myade.getInstructorByCode('4496')
+        #myade.getClassrom('Amphi')
+        #myade.getActivities()
+
+    except:
+        print(traceback.format_exc())
 
     delay = 5
     print("Wait %d seconds" % delay)
