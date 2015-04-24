@@ -68,7 +68,7 @@ def main(url, login, password):
 
     try:
 
-        projects = myade.getProjects(5) # niveau de détail
+        projects = myade.getProjects(detail=5) # detail=..., id=...
         print("projects:\n%s" % pd.DataFrame(projects))
 
         project_set = myade.setProject(5) # 2014-2015=>5
@@ -78,8 +78,8 @@ def main(url, login, password):
         resources = myade.getResources(category='trainee', id=4496)
         print("resources: %s" % resources)
 
-        #resources = myade.getResources(name='BC-138')
-        resources = myade.getResources(name='BC-138', not_allowed_parameter='test')
+        resources = myade.getResources(name='BC-138')
+        #resources = myade.getResources(name='BC-138', not_allowed_parameter='test')
         print("resources: %s" % resources)
 
         resources = myade.getResources(category='room', name='BC-138')
