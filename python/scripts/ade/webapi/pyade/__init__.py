@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 """
-    ADE API Test
+    ADE Web API
 
     Copyright (C) 2011-2015 "Sébastien Celles" <s.celles@gmail.com>
 
@@ -26,6 +26,8 @@ import traceback
 import requests
 from xml.etree import ElementTree as ET
 import time
+
+from exception import ExceptionFactory
 
 def hide_string(s, char_replace='*'):
     return(char_replace*len(s))
@@ -102,6 +104,7 @@ class ADEWebAPI():
         self.logger = logging.getLogger('ADEWebAPI')
 
         self.factory = ObjectFactory()
+        self.exception_factory = ExceptionFactory()
 
         self.opt_params = {
             'connect': set([]),
@@ -154,8 +157,11 @@ class ADEWebAPI():
         self.logger.debug(response.text)
         element = ET.fromstring(response.text)
 
-        return(element)
+        if element.tag=='error':
+            self.exception_factory.raise_from_xml(element)
 
+        return(element)
+        
     def connect(self):
         """Connect to server"""
         function = 'connect'
